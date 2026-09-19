@@ -81,6 +81,8 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
     const FRotator Rotation = GetControlRotation();
     const FRotator YawRotation(0, Rotation.Yaw, 0);
 
+    bAutoRunning = false;
+
     const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
     const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
@@ -103,7 +105,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		Spline->ClearSplinePoints();
 		for (const FVector& PointLoc : NavPath->PathPoints)
 		{
-            DrawDebugSphere(GetWorld(), PointLoc, 19.f, 12, FColor::Blue, false, 2.f);
+            //DrawDebugSphere(GetWorld(), PointLoc, 19.f, 12, FColor::Blue, false, 2.f);
 			Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
 		}
 		if (NavPath->PathPoints.Num() > 0)
@@ -114,7 +116,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		}
 	}
 }
-
+ 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
     if (CursorHit.bBlockingHit)

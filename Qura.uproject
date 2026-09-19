@@ -10,7 +10,9 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"EnhancedInput"
+				"EnhancedInput",
+				"StateTreeModule",
+				"AIModule"
 			]
 		}
 	],
@@ -21,6 +23,18 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "CameraShakePreviewer",
+			"Enabled": false
+		},
+		{
+			"Name": "GameplayCameras",
+			"Enabled": false
+		},
+		{
+			"Name": "Paper2D",
+			"Enabled": false
 		}
 	]
 }
