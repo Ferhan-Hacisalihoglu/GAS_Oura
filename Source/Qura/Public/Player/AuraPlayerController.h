@@ -13,6 +13,7 @@ struct FInputActionValue;
 class USplineComponent;
 class UAuraInputConfig;
 class USplineComponent;
+class UAuraAbilitySystemComponent;
 
 UCLASS()
 class QURA_API AAuraPlayerController : public APlayerController
@@ -55,5 +56,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+
+	UPROPERTY()
+	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
+
+	UAuraAbilitySystemComponent* GetASC();
 
 };
