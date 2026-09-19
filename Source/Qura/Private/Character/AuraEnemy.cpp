@@ -11,7 +11,20 @@ void AAuraEnemy::PossessedBy(AController* NewController)
     {
         return;
     }
+    
     AuraAIController = Cast<AAuraAIController>(NewController);
     AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
     AuraAIController->RunBehaviorTree(BehaviorTree);
+}
+
+void AAuraEnemy::HighlightActor_Implementation()
+{
+    GetMesh()->SetRenderCustomDepth(true);
+    Weapon->SetRenderCustomDepth(true);
+}
+
+void AAuraEnemy::UnhighlightActor_Implementation()
+{
+     GetMesh()->SetRenderCustomDepth(false);
+    Weapon->SetRenderCustomDepth(false);
 }
