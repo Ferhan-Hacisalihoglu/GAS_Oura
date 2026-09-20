@@ -12,6 +12,7 @@
 #include "Interaction/HighlightInterface.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -52,9 +53,9 @@ void AAuraPlayerController::CursorTrace()
     GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 
     if(!CursorHit.bBlockingHit) return;
-    
-    TObjectPtr<AActor> ThisActor = nullptr;
 
+    LastActor = ThisActor;
+    
     if(IsValid(CursorHit.GetActor()) && CursorHit.GetActor()->Implements<UHighlightInterface>())
     {
         ThisActor = CursorHit.GetActor();
@@ -69,8 +70,6 @@ void AAuraPlayerController::CursorTrace()
         HighlightActor(ThisActor);
 		UnHighlightActor(LastActor);
     }
-
-    LastActor = ThisActor;
 }
 
 void AAuraPlayerController::HighlightActor(AActor* InActor)
@@ -136,31 +135,47 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+    if (IsValid(ThisActor))
+    {
+        TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
+    }
+    else
+    {
+        TargetingStatus = ETargetingStatus::NonTargeting;
+    }
+
     bAutoRunning = false;
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-    if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
-	{
-		Spline->ClearSplinePoints();
-		for (const FVector& PointLoc : NavPath->PathPoints)
-		{
-            //DrawDebugSphere(GetWorld(), PointLoc, 19.f, 12, FColor::Blue, false, 2.f);
-			Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-		}
-		if (NavPath->PathPoints.Num() > 0)
-		{
-			CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+    if (TargetingStatus != ETargetingStatus::TargetingEnemy)
+    {
+        if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
+        {
+            Spline->ClearSplinePoints();
+            for (const FVector& PointLoc : NavPath->PathPoints)
+            {
+                //DrawDebugSphere(GetWorld(), PointLoc, 19.f, 12, FColor::Blue, false, 2.f);
+                Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+            }
+            if (NavPath->PathPoints.Num() > 0)
+            {
+                CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 
-			bAutoRunning = true;
-		}
-	}
+                bAutoRunning = true;
+            }
+        }
+        TargetingStatus = ETargetingStatus::NonTargeting;
+    }
 }
  
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-    GetASC()->AbilityInputTagHeld(InputTag);
+    if (TargetingStatus == ETargetingStatus::TargetingEnemy)
+    {
+        GetASC()->AbilityInputTagHeld(InputTag);
+    }
     
     if (CursorHit.bBlockingHit)
     {

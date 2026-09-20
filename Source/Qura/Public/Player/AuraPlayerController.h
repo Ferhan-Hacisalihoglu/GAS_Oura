@@ -15,6 +15,13 @@ class UAuraInputConfig;
 class USplineComponent;
 class UAuraAbilitySystemComponent;
 
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingNonEnemy,
+	NonTargeting
+};
+
 UCLASS()
 class QURA_API AAuraPlayerController : public APlayerController
 {
@@ -46,6 +53,7 @@ private:
 
 	void CursorTrace();
 	void AutoRun();
+	TObjectPtr<AActor> ThisActor;
 	TObjectPtr<AActor> LastActor;
 	FHitResult CursorHit;
 	static void HighlightActor(AActor* InActor);
@@ -53,6 +61,7 @@ private:
 
 	FVector CachedDestination = FVector::ZeroVector;
 	bool bAutoRunning = false;
+	ETargetingStatus TargetingStatus = ETargetingStatus::NonTargeting;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;

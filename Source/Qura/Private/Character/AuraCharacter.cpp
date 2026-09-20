@@ -3,6 +3,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AuraPlayerState.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -25,6 +26,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 
 	AddCharacterAbilities();
