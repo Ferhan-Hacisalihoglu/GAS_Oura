@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/AuraProjectileSpell.h"
+#include "Interaction/CombatInterface.h"
 #include "AuraFireBolt.generated.h"
 
 UCLASS()

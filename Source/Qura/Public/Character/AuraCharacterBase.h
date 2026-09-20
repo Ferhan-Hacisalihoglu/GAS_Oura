@@ -4,13 +4,14 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbility.h"
+#include "Interaction/CombatInterface.h"
 
 #include "AuraCharacterBase.generated.h"
 
 class UAbilitySystemComponent;
 
 UCLASS()
-class QURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface
+class QURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -18,12 +19,16 @@ public:
 	AAuraCharacterBase();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual FVector GetCombatSocketLocation_Implementation() override;
 
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponTipSocketName;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
