@@ -32,7 +32,7 @@ void AAuraEnemy::BeginPlay()
     {
         UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
     }
-    
+
     if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
     {
         AuraUserWidget->SetWidgetController(this);
@@ -71,10 +71,7 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
-    if (!HasAuthority())
-    {
-        return;
-    }
+    if (!HasAuthority()) return;
     
     AuraAIController = Cast<AAuraAIController>(NewController);
     AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
@@ -91,4 +88,10 @@ void AAuraEnemy::UnhighlightActor_Implementation()
 {
     GetMesh()->SetRenderCustomDepth(false);
     Weapon->SetRenderCustomDepth(false);
+}
+
+void AAuraEnemy::Die()
+{
+    SetLifeSpan(2.0f);
+    Super::Die();
 }
