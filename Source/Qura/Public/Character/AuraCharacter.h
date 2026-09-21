@@ -23,5 +23,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class USpringArmComponent> CameraBoom;
+
+	virtual void InitAbilityActorInfo() override;
 	
 };

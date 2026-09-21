@@ -64,7 +64,23 @@
 		"directory": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Source"
 	},
 	{
+		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\AbilitySystem\\AuraAttributeSet.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Source"
+	},
+	{
 		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\Actor\\AuraProjectile.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Source"
+	},
+	{
+		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\AuraAbilityTypes.cpp",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
 			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"
@@ -105,6 +121,14 @@
 	},
 	{
 		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\Input\\AuraInputConfig.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Source"
+	},
+	{
+		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\Interaction\\CombatInterface.cpp",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
 			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"

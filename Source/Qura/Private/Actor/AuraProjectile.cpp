@@ -1,5 +1,7 @@
 #include "Actor/AuraProjectile.h"
 #include "Components/SphereComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 AAuraProjectile::AAuraProjectile()
@@ -25,4 +27,26 @@ void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereBeginOverlay);
+}
+
+void AAuraProjectile::OnSphereBeginOverlay(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if(HasAuthority())
+	{
+		if(UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		{
+			//DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
+			//UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
+			
+			// TODO: Refactor this to use the ApplyDamageEffect function in AuraAbilitySystemLibrary
+			const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+			FGameplayEffectContextHandle EffectContexthandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
+			EffectContexthandle.AddSourceObject(SourceAvatarActor);
+			const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParams.DamageGameplayEffectClass, 1.f, EffectContexthandle);
+			TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+		}
+
+		Destroy();
+	}
 }

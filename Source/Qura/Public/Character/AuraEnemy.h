@@ -15,6 +15,7 @@ class QURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface, p
 	GENERATED_BODY()
 
 public:
+	AAuraEnemy();
 	virtual void PossessedBy(AController* NewController) override;
 
 	/* Highlight Interface */

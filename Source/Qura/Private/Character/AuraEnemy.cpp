@@ -1,7 +1,20 @@
 #include "Character/AuraEnemy.h"
 #include "AI/AuraAIController.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AbilitySystem/AuraAttributeSet.h"
+
+AAuraEnemy::AAuraEnemy()
+{
+    PrimaryActorTick.bCanEverTick = false;
+
+    AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+    AbilitySystemComponent->SetIsReplicated(true);
+    AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+    AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>(TEXT("AttributeSet"));
+}
 
 void AAuraEnemy::PossessedBy(AController* NewController)
 {
