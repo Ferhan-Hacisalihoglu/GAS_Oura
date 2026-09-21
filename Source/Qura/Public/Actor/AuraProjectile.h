@@ -7,6 +7,7 @@
 
 class UProjectileMovementComponent;
 class USphereComponent;
+class UNiagaraSystem;
 
 UCLASS()
 class QURA_API AAuraProjectile : public AActor
@@ -30,5 +31,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USphereComponent> Sphere;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHit();
+	virtual void Destroyed() override;
+
+	bool bHit = false;
+
+private:
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> ImpactEffect;
 
 };

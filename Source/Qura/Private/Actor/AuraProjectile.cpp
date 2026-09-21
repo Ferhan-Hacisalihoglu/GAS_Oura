@@ -4,6 +4,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "NiagaraFunctionLibrary.h"
 
 AAuraProjectile::AAuraProjectile()
 {
@@ -33,6 +34,8 @@ void AAuraProjectile::BeginPlay()
 
 void AAuraProjectile::OnSphereBeginOverlay(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!bHit) OnHit();
+
 	if(HasAuthority())
 	{
 		if(UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
@@ -41,6 +44,22 @@ void AAuraProjectile::OnSphereBeginOverlay(UPrimitiveComponent* OverlappedCompon
 			UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
 
-		Destroy();
+		Destroyed();
 	}
+	else
+	{
+		bHit = true;
+	}
+}
+
+void AAuraProjectile::OnHit()
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), GetActorRotation());
+	bHit = true;
+}
+
+void AAuraProjectile::Destroyed()
+{
+	if (!bHit && !HasAuthority()) OnHit();
+	Super::Destroyed();
 }
