@@ -64,6 +64,14 @@
 		"directory": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Source"
 	},
 	{
+		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\AbilitySystem\\AuraAbilitySystemLibrary.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Source"
+	},
+	{
 		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\AbilitySystem\\AuraAttributeSet.cpp",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
@@ -161,6 +169,14 @@
 	},
 	{
 		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\Player\\AuraPlayerState.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Source"
+	},
+	{
+		"file": "C:\\Project\\UnrealEngine\\Qura\\Source\\Qura\\Private\\UI\\Widget\\AuraUserWidget.cpp",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
 			"@C:\\Project\\UnrealEngine\\Qura\\.vscode\\compileCommands_Qura\\Qura.0.rsp"

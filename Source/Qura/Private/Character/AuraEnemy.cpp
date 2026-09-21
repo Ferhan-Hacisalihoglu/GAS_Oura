@@ -4,6 +4,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "UI/Widget/AuraUserWidget.h"
+#include "Components/WidgetComponent.h"
 
 AAuraEnemy::AAuraEnemy()
 {
@@ -14,6 +16,37 @@ AAuraEnemy::AAuraEnemy()
     AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
     AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>(TEXT("AttributeSet"));
+
+    HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+	HealthBar->SetupAttachment(GetRootComponent());
+}
+
+void AAuraEnemy::BeginPlay()
+{
+    Super::BeginPlay();
+
+    FGameplayEffectContextHandle VitalAttributesContextHandle = AbilitySystemComponent->MakeEffectContext();
+	VitalAttributesContextHandle.AddSourceObject(AbilitySystemComponent->GetAvatarActor());
+	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultVitalAttributes, 1.f, VitalAttributesContextHandle);
+	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
+
+    if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
+    {
+        AuraUserWidget->SetWidgetController(this);
+    }
+
+    if(const UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(AttributeSet))
+    {
+        AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).AddLambda(
+            [this](const FOnAttributeChangeData& Data)
+            {
+                OnHealthChanged.Broadcast(Data.NewValue);
+            }
+        );
+
+        OnHealthChanged.Broadcast(AuraAS->GetHealth());
+    }
+
 }
 
 void AAuraEnemy::PossessedBy(AController* NewController)

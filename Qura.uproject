@@ -13,7 +13,8 @@
 				"EnhancedInput",
 				"StateTreeModule",
 				"AIModule",
-				"GameplayAbilities"
+				"GameplayAbilities",
+				"UMG"
 			]
 		}
 	],
@@ -43,6 +44,10 @@
 		},
 		{
 			"Name": "MotionWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
 			"Enabled": true
 		}
 	]
