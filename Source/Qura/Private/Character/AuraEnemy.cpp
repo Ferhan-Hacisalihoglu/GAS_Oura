@@ -6,6 +6,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "UI/Widget/AuraUserWidget.h"
 #include "Components/WidgetComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
 AAuraEnemy::AAuraEnemy()
 {
@@ -25,17 +26,13 @@ void AAuraEnemy::BeginPlay()
 {
     Super::BeginPlay();
 
-    for (TSubclassOf<UGameplayAbility> AbilityClass : CommonAbilities)
+    InitAbilityActorInfo();
+
+    if(HasAuthority())
     {
-        FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,1);
-        AbilitySystemComponent->GiveAbility(AbilitySpec);
+        UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
     }
-
-    FGameplayEffectContextHandle VitalAttributesContextHandle = AbilitySystemComponent->MakeEffectContext();
-	VitalAttributesContextHandle.AddSourceObject(AbilitySystemComponent->GetAvatarActor());
-	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultVitalAttributes, 1.f, VitalAttributesContextHandle);
-	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
-
+    
     if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
     {
         AuraUserWidget->SetWidgetController(this);
@@ -53,6 +50,21 @@ void AAuraEnemy::BeginPlay()
         OnHealthChanged.Broadcast(AuraAS->GetHealth());
     }
 
+}
+
+void AAuraEnemy::InitAbilityActorInfo()
+{
+    AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+    if (HasAuthority())
+    {
+        InitializeDefaultAttributes();
+    }
+}
+
+void AAuraEnemy::InitializeDefaultAttributes() const
+{
+    UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, 1.f, AbilitySystemComponent );
 }
 
 void AAuraEnemy::PossessedBy(AController* NewController)
