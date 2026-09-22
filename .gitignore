@@ -74,14 +74,9 @@ Plugins/**/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-/.git
-/.vscode
-/Content
-/DerivedDataCache
-/Intermediate
-/Saved
+.git/
+.vscode/
 
 
-# Assets
 
-Content/Assets/
+

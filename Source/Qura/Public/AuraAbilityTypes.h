@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameplayEffectTypes.h"
 #include "AuraAbilityTypes.generated.h"
 
 class UGameplayEffect;
@@ -20,8 +21,47 @@ struct FDamageEffectParams
 
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UAbilitySystemComponent> TargetAbilitySystemComponent;
+
+	UPROPERTY(BlueprintReadWrite)
+	float KnockbackForceMagnitude = 0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector KnockbackForce = FVector::ZeroVector;
 	
 };
 
+USTRUCT(BlueprintType)
+struct FAuraGameplayEffectContext : public FGameplayEffectContext
+{
+	GENERATED_BODY()
 
+public:
+
+	FVector GetKnockbackForce() const { return KnockbackForce; }
+
+	void SetKnockbackForce(const FVector& InKnockbackForce) { KnockbackForce = InKnockbackForce; }
+
+	virtual UScriptStruct* GetScriptStruct() const
+	{
+		return FGameplayEffectContext::StaticStruct();
+	}
+
+	virtual FGameplayEffectContext* Duplicate() const
+	{
+		FGameplayEffectContext* NewContext = new FGameplayEffectContext();
+		*NewContext = *this;
+		if (GetHitResult())
+		{
+			NewContext->AddHitResult(*GetHitResult(), true);
+		}
+		return NewContext;
+	}
+
+	virtual bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess);
+	
+protected:
+
+	UPROPERTY()
+	FVector KnockbackForce = FVector::ZeroVector;
+};
 

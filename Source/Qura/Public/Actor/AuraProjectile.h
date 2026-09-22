@@ -36,6 +36,7 @@ protected:
 	virtual void OnHit();
 	virtual void Destroyed() override;
 
+	bool IsValidOverlap(AActor* OtherActor);
 	bool bHit = false;
 
 private:

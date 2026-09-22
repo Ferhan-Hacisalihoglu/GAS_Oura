@@ -5,6 +5,8 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AuraAbilityTypes.h"
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -50,6 +52,14 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
             FGameplayTagContainer TagContainer;
             TagContainer.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Effects.HitReact")));
             Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+
+            Props.TargetCharacter->LaunchCharacter(*new FVector((-250.f,-400.f,189.65f)), true, true);
+
+			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
+			if (!KnockbackForce.IsNearlyZero(1.f))
+			{
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
+			}
         }
     }
 }
