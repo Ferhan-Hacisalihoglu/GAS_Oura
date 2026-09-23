@@ -31,7 +31,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
 
+	UPROPERTY(EditDefaultsOnly)
+	float WalkSpeed = 400.f;
+
 	virtual void Die() override;
+
+	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 protected:
 	virtual void BeginPlay() override;

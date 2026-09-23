@@ -1,5 +1,6 @@
 #include "AbilitySystem/AbilityTasks/TargetDataUnderMouse.h"
 #include "AbilitySystemComponent.h"
+#include "Qura/Qura.h"
 
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
@@ -43,7 +44,7 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	
 	APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
 	FHitResult CursorHit;
-	PC->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, CursorHit);
+	PC->GetHitResultUnderCursor(ECC_Target, false, CursorHit);
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();

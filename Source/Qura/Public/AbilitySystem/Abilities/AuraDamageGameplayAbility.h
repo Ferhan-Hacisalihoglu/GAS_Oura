@@ -23,6 +23,6 @@ protected:
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	float KnockbackForceMagnitude = 500.f;
+	float KnockbackForceMagnitude = 400.f;
  
 };
