@@ -39,7 +39,7 @@ public:
 
 	FVector GetKnockbackForce() const { return KnockbackForce; }
 
-	void SetKnockbackForce(const FVector& InKnockbackForce) { KnockbackForce = InKnockbackForce; }
+	void SetKnockbackForce(const FVector& InForce) { KnockbackForce = InForce; }
 
 	virtual UScriptStruct* GetScriptStruct() const
 	{

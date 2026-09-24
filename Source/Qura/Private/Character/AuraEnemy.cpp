@@ -60,6 +60,17 @@ void AAuraEnemy::BeginPlay()
 
 }
 
+void AAuraEnemy::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+
+    if (!HasAuthority()) return;
+    
+    AuraAIController = Cast<AAuraAIController>(NewController);
+    AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+    AuraAIController->RunBehaviorTree(BehaviorTree);
+}
+
 void AAuraEnemy::InitAbilityActorInfo()
 {
     AbilitySystemComponent->InitAbilityActorInfo(this, this);
@@ -73,17 +84,6 @@ void AAuraEnemy::InitAbilityActorInfo()
 void AAuraEnemy::InitializeDefaultAttributes() const
 {
     UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, 1.f, AbilitySystemComponent );
-}
-
-void AAuraEnemy::PossessedBy(AController* NewController)
-{
-    Super::PossessedBy(NewController);
-
-    if (!HasAuthority()) return;
-    
-    AuraAIController = Cast<AAuraAIController>(NewController);
-    AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-    AuraAIController->RunBehaviorTree(BehaviorTree);
 }
 
 void AAuraEnemy::HighlightActor_Implementation()

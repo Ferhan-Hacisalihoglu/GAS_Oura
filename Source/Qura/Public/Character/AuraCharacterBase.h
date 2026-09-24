@@ -12,6 +12,7 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 class UMaterialInstanceDynamic;
 class UMaterialInstance;
+class UNiagaraSystem;
 
 UCLASS()
 class QURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -26,10 +27,12 @@ public:
 	virtual void Die() override;
 
 	UFUNCTION(NetMulticast,Reliable)
-	virtual void MulticastHandleDie();
+	virtual void MulticastHandleDeath();
 
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
+
+	virtual UNiagaraSystem* GetBooldEffect_Implementation() const override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -73,6 +76,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bDead = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	UNiagaraSystem* BloodEffect;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")

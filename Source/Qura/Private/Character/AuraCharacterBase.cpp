@@ -36,7 +36,6 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 void AAuraCharacterBase::AddCharacterAbilities()
 {
 	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
-
 	if(!HasAuthority()) return;
 
 	AuraASC->AddCharacterAbilities(StartupAbilities);
@@ -49,7 +48,10 @@ FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation()
 
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
-	
+	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	if (!HasAuthority()) return;
+
+	AuraASC->AddCharacterAbilities(StartupAbilities);
 }
 
 void AAuraCharacterBase::InitializeDefaultAttributes() const
@@ -68,10 +70,10 @@ void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Gameplay
 void AAuraCharacterBase::Die()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld,true));
-	MulticastHandleDie();
+	MulticastHandleDeath();
 }
 
-void AAuraCharacterBase::MulticastHandleDie_Implementation()
+void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
@@ -113,3 +115,7 @@ AActor* AAuraCharacterBase::GetAvatar_Implementation()
 	return this;
 }
 
+UNiagaraSystem* AAuraCharacterBase::GetBooldEffect_Implementation() const
+{
+	return BloodEffect;
+}

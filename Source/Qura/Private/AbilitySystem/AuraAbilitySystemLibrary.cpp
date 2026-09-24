@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Interaction/CombatInterface.h"
 #include "Engine/OverlapResult.h"
+#include "Engine/Engine.h"
 
 FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
 {
@@ -69,12 +70,12 @@ void UAuraAbilitySystemLibrary::GetLivePlayerWithinRadius(const UObject* WorldCo
 {
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActors(ActorsToIgnore);
-
+	
 	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
 	{
 		TArray<FOverlapResult> Overlaps;
-		World->OverlapMultiByChannel(Overlaps, SphereOrigin, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeSphere(Radius), SphereParams);
-
+		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity,FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),FCollisionShape::MakeSphere(Radius), SphereParams);
+		
 		for (FOverlapResult& Overlap : Overlaps)
 		{
 			if (Overlap.GetActor()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(Overlap.GetActor()))

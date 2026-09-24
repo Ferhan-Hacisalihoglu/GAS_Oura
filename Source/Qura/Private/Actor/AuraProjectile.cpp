@@ -48,10 +48,8 @@ void AAuraProjectile::OnSphereBeginOverlay(UPrimitiveComponent* OverlappedCompon
 
 		Destroyed();
 	}
-	else
-	{
-		bHit = true;
-	}
+	
+	bHit = true;
 }
 
 bool AAuraProjectile::IsValidOverlap(AActor* OtherActor)
