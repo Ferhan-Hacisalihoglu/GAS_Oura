@@ -101,6 +101,7 @@ void AAuraEnemy::UnhighlightActor_Implementation()
 void AAuraEnemy::Die()
 {
     SetLifeSpan(2.0f);
+    SpawnLoot();
     Super::Die();
 }
 

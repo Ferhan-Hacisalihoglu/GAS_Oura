@@ -52,4 +52,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLoot();
 };
