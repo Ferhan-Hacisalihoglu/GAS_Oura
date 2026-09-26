@@ -4,7 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "AuraEffectActor.generated.h"
 
-
+class UAbilitySystemComponent;
+class UGameplayEffect;
 
 UCLASS()
 class QURA_API AAuraEffectActor : public AActor
@@ -15,6 +16,8 @@ public:
 	AAuraEffectActor();
 
 	void Tick(float DeltaTime) override;
+
+protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	FVector CalculatedLocation;
@@ -46,8 +49,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
 	FVector InitialLocation;
 
-protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass);
 
 private: 
 

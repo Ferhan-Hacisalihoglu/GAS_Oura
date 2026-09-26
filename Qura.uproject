@@ -14,7 +14,8 @@
 				"StateTreeModule",
 				"AIModule",
 				"GameplayAbilities",
-				"UMG"
+				"UMG",
+				"CoreUObject"
 			]
 		}
 	],
