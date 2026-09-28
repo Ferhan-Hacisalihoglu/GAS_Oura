@@ -31,6 +31,8 @@ void AAuraProjectile::BeginPlay()
 	Super::BeginPlay();
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereBeginOverlay);
+
+	SetLifeSpan(3.f);
 }
 
 void AAuraProjectile::OnSphereBeginOverlay(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -46,7 +48,7 @@ void AAuraProjectile::OnSphereBeginOverlay(UPrimitiveComponent* OverlappedCompon
 			UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
 
-		Destroyed();
+		Destroy();
 	}
 	
 	bHit = true;

@@ -8,6 +8,7 @@
 struct FWidgetControllerParams;
 class UAbilitySystemComponent;
 class ULootTiers;
+class USpellMenuWidgetController;
 
 UCLASS()
 class QURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
@@ -15,6 +16,9 @@ class QURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
+	static bool MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, AAuraHUD*& OutAuraHUD);
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary/DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
@@ -45,5 +49,8 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
 	static TArray<FRotator> EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators);
+
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetControllers", meta = (DefaultToSelf = "WorldContextObject"))
+	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
 
 };

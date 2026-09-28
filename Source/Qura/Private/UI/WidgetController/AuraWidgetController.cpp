@@ -3,13 +3,14 @@
 #include "Player/AuraPlayerState.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 
 void UAuraWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& WCParams)
 {
-    PlayerController = WCParams.PlayerController;
-    PlayerState = WCParams.PlayerState;
-    AbilitySystemComponent = WCParams.AbilitySystemComponent;
-    AttributeSet = WCParams.AttributeSet;
+	PlayerController = WCParams.PlayerController;
+	PlayerState = WCParams.PlayerState;
+	AbilitySystemComponent = WCParams.AbilitySystemComponent;
+	AttributeSet = WCParams.AttributeSet;
 }
 
 UAuraAbilitySystemComponent* UAuraWidgetController::GetAuraASC()
@@ -24,4 +25,21 @@ UAuraAbilitySystemComponent* UAuraWidgetController::GetAuraASC()
 void UAuraWidgetController::BindCallbacksToDependencies()
 {
 	
+}
+
+void UAuraWidgetController::BroadcastInitialValues()
+{
+	
+}
+
+void UAuraWidgetController::BroadcastAbilityInfo()
+{
+	FForEachAbility BroadcastDelegate;
+	BroadcastDelegate.BindLambda([this](const FGameplayAbilitySpec& AbilitySpec)
+	{
+		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AuraAbilitySystemComponent->GetAbilityTagFromSpec(AbilitySpec));
+		Info.InputTag = AuraAbilitySystemComponent->GetInputTagFromSpec(AbilitySpec);
+		AbilityInfoDelegate.Broadcast(Info);
+	});
+	GetAuraASC()->ForEachAbility(BroadcastDelegate);
 }
