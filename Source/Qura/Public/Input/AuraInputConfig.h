@@ -14,7 +14,7 @@ struct FAuraInputAction
 	const class UInputAction* InputAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FGameplayTag InputTag;
+	FGameplayTag InputTag = FGameplayTag();
 };
 
 UCLASS()
