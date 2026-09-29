@@ -6,6 +6,7 @@
 
 class UCharacterClassInfo;
 class ULootTiers;
+class UAbilityInfo;
 
 UCLASS()
 class QURA_API AAuraGameModeBase : public AGameModeBase
@@ -18,5 +19,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Loot Tiers")
 	TObjectPtr<ULootTiers> LootTiers;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
 
 };

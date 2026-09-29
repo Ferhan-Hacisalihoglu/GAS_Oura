@@ -7,6 +7,7 @@
 #include "Interaction/CombatInterface.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AuraAbilityTypes.h"
+#include "Interaction/PlayerInterface.h"
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -27,6 +28,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
     {
         HandleIncomingDamage(Props);
     }
+    if  (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
+    {
+        HandleIncomingXP(Props);
+    }
 }
 
 void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
@@ -46,6 +51,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
             {
                 CombatInterface->Die();
             }
+            SendXPEvent(Props);
         }
         else
         {
@@ -59,6 +65,25 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
 			}
         }
+    }
+}
+
+void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
+{
+    const float LocalIncomingXP = GetIncomingXP();
+    SetIncomingXP(0.f);
+
+    IPlayerInterface::Execute_AddToPlayerLevel(Props.TargetCharacter, 1);
+}
+
+void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
+{
+    if (Props.TargetCharacter->Implements<UCombatInterface>())
+    {
+       FGameplayEventData Payload;
+       Payload.EventTag = FGameplayTag::RequestGameplayTag(TEXT("Attributes.Meta.IncomingXP"));
+       Payload.EventMagnitude = 33;
+       UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceAvatarActor, FGameplayTag::RequestGameplayTag(TEXT("Attributes.Meta.IncomingXP")), Payload);
     }
 }
 
