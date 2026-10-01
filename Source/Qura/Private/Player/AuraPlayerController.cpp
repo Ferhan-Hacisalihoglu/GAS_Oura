@@ -145,10 +145,14 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
     }
 
     bAutoRunning = false;
+
+   if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+    if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
+
     if (TargetingStatus != ETargetingStatus::TargetingEnemy)
     {
         if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
@@ -174,7 +178,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
     if (TargetingStatus == ETargetingStatus::TargetingEnemy)
     {
-        GetASC()->AbilityInputTagHeld(InputTag);
+        GetASC()-> AbilityInputTagHeld(InputTag);
     }
     
     if (CursorHit.bBlockingHit)

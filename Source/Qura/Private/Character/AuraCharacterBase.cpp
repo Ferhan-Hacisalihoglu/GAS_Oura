@@ -127,3 +127,8 @@ UNiagaraSystem* AAuraCharacterBase::GetBooldEffect_Implementation() const
 {
 	return BloodEffect;
 }
+
+USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
+{
+	return Weapon;
+}

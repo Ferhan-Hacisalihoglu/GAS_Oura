@@ -10,21 +10,59 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
     OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::ClientEffectApplied);
 } 
 
-void UAuraAbilitySystemComponent::AbilityInputTagHeld(FGameplayTag InputTag)
+void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return;
+	FScopedAbilityListLock ActiveScopeLoc(*this);
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+        if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+		{
+			AbilitySpecInputPressed(AbilitySpec);
+			if (AbilitySpec.IsActive())
+			{
+                if (UGameplayAbility* AbilityInstance = AbilitySpec.GetPrimaryInstance())
+                {
+                    InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, AbilitySpec.Handle, AbilityInstance->GetCurrentActivationInfo().GetActivationPredictionKey());
+                }
+			}
+		}
+	}
+}
+
+
+void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
     if (!InputTag.IsValid()) return;
 	FScopedAbilityListLock ActiveScopeLoc(*this);
 
-    for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
-    {
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
         if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
-        {
-            if (!AbilitySpec.IsActive())
+		{
+			if (!AbilitySpec.IsActive())
+			{
+				TryActivateAbility(AbilitySpec.Handle);
+			}
+		}
+	}
+}
+
+void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return;
+	FScopedAbilityListLock ActiveScopeLoc(*this);
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+        if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag) && AbilitySpec.IsActive())
+		{
+			AbilitySpecInputReleased(AbilitySpec);
+            if (UGameplayAbility* AbilityInstance = AbilitySpec.GetPrimaryInstance())
             {
-                TryActivateAbility(AbilitySpec.Handle);
+                InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, AbilityInstance->GetCurrentActivationInfo().GetActivationPredictionKey());
             }
-        }
-    }
+		}
+	}
 }
 
 void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
