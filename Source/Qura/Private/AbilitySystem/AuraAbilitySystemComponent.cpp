@@ -34,8 +34,8 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
         FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,1);
         if (const UAuraGameplayAbility* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec.Ability))
         {
-            //AbilitySpec.GetDynamicSpecSourceTags().AddTag(AuraAbility->StartupInputTag);
-            AbilitySpec.GetDynamicSpecSourceTags().AddTag(FGameplayTag::RequestGameplayTag("Abilities.Status.Eligible"));
+            AbilitySpec.GetDynamicSpecSourceTags().AddTag(AuraAbility->StartupInputTag);
+            AbilitySpec.GetDynamicSpecSourceTags().AddTag(FGameplayTag::RequestGameplayTag("Abilities.Status.Equipped"));
             GiveAbility(AbilitySpec);
         }
     }
@@ -157,30 +157,72 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
     if(FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
     {
         const FGameplayTag PrevSlot = GetInputTagFromSpec(*AbilitySpec);
+        const FGameplayTag Status = GetStatusFromSpec(*AbilitySpec);
+        const bool bStatusValid = Status.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Equipped"))) || Status.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Unlocked")));
 
-        if(!SlotIsEmpty(Slot))
+        if(bStatusValid)
         {
-            FGameplayAbilitySpec* SpecWithSlot = GetSpecWithSlot(Slot);
-
-            if(SpecWithSlot)
+            if(!SlotIsEmpty(Slot))
             {
-                if(AbilityTag.MatchesTagExact(GetAbilityTagFromSpec(*SpecWithSlot)))
+                FGameplayAbilitySpec* SpecWithSlot = GetSpecWithSlot(Slot);
+
+                if(SpecWithSlot)
                 {
-                    AbilityEquipped.Broadcast(AbilityTag, FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Equipped")),Slot, PrevSlot);
-                    return;
+                    if(AbilityTag.MatchesTagExact(GetAbilityTagFromSpec(*SpecWithSlot)))
+                    {
+                        ClientEquipAbility(AbilityTag, FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Equipped")),Slot, PrevSlot);
+                        return;
+                    }
+
+                    if(IsPassiveAbility(*SpecWithSlot))
+                    {
+                        MulticastActivatePassiveEffect(GetAbilityTagFromSpec(*SpecWithSlot), false);
+                    }
+
+                    const FGameplayTag RemoveSlot = GetInputTagFromSpec(*SpecWithSlot);
+                    SpecWithSlot->GetDynamicSpecSourceTags().RemoveTag(RemoveSlot);
+                }
+            }
+
+            if (!AbilityHasAnySlot(*AbilitySpec))
+            {
+                if(IsPassiveAbility(*AbilitySpec))
+                {
+                    TryActivateAbility(AbilitySpec->Handle);
+                    MulticastActivatePassiveEffect(AbilityTag, true);
                 }
 
-                const FGameplayTag RemoveSlot = GetInputTagFromSpec(*SpecWithSlot);
-                SpecWithSlot->GetDynamicSpecSourceTags().RemoveTag(RemoveSlot);
+                AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GetStatusFromSpec(*AbilitySpec));
+                AbilitySpec->GetDynamicSpecSourceTags().AddTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Equipped")));
             }
+
+            AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(PrevSlot);
+            AbilitySpec->GetDynamicSpecSourceTags().AddTag(Slot);
+            MarkAbilitySpecDirty(*AbilitySpec);
         }
 
-        AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(PrevSlot);
+        ClientEquipAbility(AbilityTag, FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Equipped")),Slot, PrevSlot);
 
-        AbilitySpec->GetDynamicSpecSourceTags().AddTag(Slot);
-
-        AbilityEquipped.Broadcast(AbilityTag, FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Equipped")),Slot, PrevSlot);
     }
+}
+
+bool UAuraAbilitySystemComponent::AbilityHasAnySlot(const FGameplayAbilitySpec& Spec)
+{
+    return Spec.GetDynamicSpecSourceTags().HasTag(FGameplayTag::RequestGameplayTag(FName("InputTag")));
+}
+
+bool UAuraAbilitySystemComponent::IsPassiveAbility(const FGameplayAbilitySpec& Spec) const
+{
+    const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+    const FGameplayTag AbilityTag = GetAbilityTagFromSpec(Spec);
+    const FAuraAbilityInfo& Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+    const FGameplayTag AbilityType = Info.AbilityType;
+    return AbilityType.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Type.Passive")));
+}
+
+void UAuraAbilitySystemComponent::MulticastActivatePassiveEffect_Implementation(const FGameplayTag& AbilityTag, bool bActivate)
+{
+    ActivatePassiveEffect.Broadcast(AbilityTag, bActivate);
 }
 
 void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
@@ -196,7 +238,7 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
             AbilitySpec.GetDynamicSpecSourceTags().AddTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")));
             GiveAbility(AbilitySpec);
             MarkAbilitySpecDirty(AbilitySpec);
-            AbilityStatusChanged.Broadcast(Info.AbilityTag,FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")),1);
+            ClientUpdateAbilityStatuses(Info.AbilityTag,FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")),1);
         }
     }
 }
@@ -222,7 +264,17 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGa
 		{
 			AbilitySpec->Level += 1;
 		}
-		AbilityStatusChanged.Broadcast(AbilityTag, Status, AbilitySpec->Level);
+		ClientUpdateAbilityStatuses(AbilityTag, Status, AbilitySpec->Level);
 		MarkAbilitySpecDirty(*AbilitySpec);
 	}
+}
+
+void UAuraAbilitySystemComponent::ClientUpdateAbilityStatuses_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel)
+{
+    AbilityStatusChanged.Broadcast(AbilityTag, StatusTag, AbilityLevel);
+}
+
+void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot)
+{
+    AbilityEquipped.Broadcast(AbilityTag, Status, Slot, PreviousSlot);
 }

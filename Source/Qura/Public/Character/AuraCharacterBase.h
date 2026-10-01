@@ -13,6 +13,7 @@ class UAttributeSet;
 class UMaterialInstanceDynamic;
 class UMaterialInstance;
 class UNiagaraSystem;
+class UPassiveNiagaraComponent;
 
 UCLASS()
 class QURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -85,7 +86,13 @@ private:
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 	UPROPERTY(EditAnywhere, Category = "Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities; 
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> HaloOfProtectionNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> EffectAttachComponent;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
