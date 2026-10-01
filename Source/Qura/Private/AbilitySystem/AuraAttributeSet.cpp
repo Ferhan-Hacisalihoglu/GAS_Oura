@@ -46,7 +46,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
         const bool bFatal = NewHealth <= 0.f;
         if (bFatal)
         {
-            ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetCharacter);
+            ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
             if (CombatInterface)
             {
                 CombatInterface->Die();
@@ -62,7 +62,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (!KnockbackForce.IsNearlyZero(1.f))
 			{
-				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
+                Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
 			}
         }
     }
@@ -73,7 +73,8 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
     const float LocalIncomingXP = GetIncomingXP();
     SetIncomingXP(0.f);
 
-    IPlayerInterface::Execute_AddToPlayerLevel(Props.TargetCharacter, 1);
+    IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, 1);
+    IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, 1);
 }
 
 void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
@@ -83,7 +84,7 @@ void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
        FGameplayEventData Payload;
        Payload.EventTag = FGameplayTag::RequestGameplayTag(TEXT("Attributes.Meta.IncomingXP"));
        Payload.EventMagnitude = 33;
-       UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceAvatarActor, FGameplayTag::RequestGameplayTag(TEXT("Attributes.Meta.IncomingXP")), Payload);
+       UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, FGameplayTag::RequestGameplayTag(TEXT("Attributes.Meta.IncomingXP")), Payload);
     }
 }
 
@@ -113,7 +114,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 	{
 		Props.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
 		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
-		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
+        Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
 		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
 }

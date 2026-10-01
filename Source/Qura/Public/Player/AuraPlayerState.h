@@ -5,6 +5,8 @@
 #include "AbilitySystemInterface.h"
 #include "AuraPlayerState.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/)
+
 class UAbilitySystemComponent;
 class UAttributeSet;
 
@@ -20,6 +22,11 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
 	void AddToLevel(int32 InLevel);
+	FOnPlayerStatChanged OnSpellPointsChangedDelegate;
+	FORCEINLINE int32 GetSpellPoints() const { return SpellPoints; }
+	void AddToSpellPoints(int32 InPoints);
+	void SetSpellPoints(int32 InPoints);
+
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -34,5 +41,11 @@ private:
 
 	UFUNCTION()
 	void OnRep_Level(int32 OldLevel);
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SpellPoints)
+	int32 SpellPoints = 1;
+
+	UFUNCTION()
+	void OnRep_SpellPoints(int32 OldSpellPoints);
 	
 };

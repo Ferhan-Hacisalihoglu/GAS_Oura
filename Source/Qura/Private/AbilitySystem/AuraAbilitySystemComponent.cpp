@@ -193,7 +193,7 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
         if(GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
         {
             FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
-            AbilitySpec.DynamicAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")));
+            AbilitySpec.GetDynamicSpecSourceTags().AddTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")));
             GiveAbility(AbilitySpec);
             MarkAbilitySpecDirty(AbilitySpec);
             AbilityStatusChanged.Broadcast(Info.AbilityTag,FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")),1);
@@ -207,15 +207,15 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGa
 	{
 		if (GetAvatarActor()->Implements<UPlayerInterface>())
 		{
-			//IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(), -1);
+			IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(), -1);
 		}
 		
 		FGameplayTag Status = GetStatusFromSpec(*AbilitySpec);
 
 		if (Status.MatchesTagExact(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible"))))
 		{
-			AbilitySpec->DynamicAbilityTags.RemoveTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")));
-			AbilitySpec->DynamicAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Unlocked")));
+            AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Eligible")));
+            AbilitySpec->GetDynamicSpecSourceTags().AddTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Unlocked")));
 			Status = FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Unlocked"));
 		}
 		else if (Status.MatchesTagExact(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Equipped"))) || Status.MatchesTagExact(FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Unlocked"))))
