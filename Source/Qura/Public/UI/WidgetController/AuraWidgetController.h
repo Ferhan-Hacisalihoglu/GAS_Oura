@@ -80,6 +80,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<AAuraPlayerState> AuraPlayerState;
 
+	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
+	TObjectPtr<UAuraAttributeSet> AuraAttributeSet;
+
 	UAuraAbilitySystemComponent* GetAuraASC();
 	AAuraPlayerState* GetAuraPS();
+	UAuraAttributeSet* GetAuraAS();
 };

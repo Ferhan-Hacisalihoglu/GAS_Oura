@@ -1,11 +1,23 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
-
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Player/AuraPlayerState.h"
 
+void UOverlayWidgetController::BroadcastInitialValues()
+{
+    OnManaChanged.Broadcast(GetAuraAS()->GetMana());
+}
+
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
+
+    AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetAuraAS()->GetManaAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnManaChanged.Broadcast(Data.NewValue);
+			}
+		);
+
     if (GetAuraASC())
     {
         GetAuraASC()->EffectAssetTags.AddLambda(
