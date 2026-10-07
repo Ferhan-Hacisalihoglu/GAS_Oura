@@ -67,11 +67,11 @@ void UAuraBeamSpell::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTarget
 		GetAvatarActorFromActorInfo(),
 		OverlappedActors,
 		ActorsToIgnore,
-		850.0f,
+		500.0f,
 		MouseHitActor->GetActorLocation()
 	);
 
-	int32 NumAdditionalTargets = 5;
+	int32 NumAdditionalTargets = 3;
 
 	UAuraAbilitySystemLibrary::GetClosestTargets(
 		NumAdditionalTargets,
