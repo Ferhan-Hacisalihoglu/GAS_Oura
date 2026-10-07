@@ -2,14 +2,22 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Player/AuraPlayerState.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
+    OnHealthChanged.Broadcast(GetAuraAS()->GetHealth());
     OnManaChanged.Broadcast(GetAuraAS()->GetMana());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
+    AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetAuraAS()->GetHealthAttribute()).AddLambda(
+            [this](const FOnAttributeChangeData& Data)
+            {
+                OnHealthChanged.Broadcast(Data.NewValue);
+            }
+        );
 
     AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetAuraAS()->GetManaAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)
@@ -20,6 +28,17 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
     if (GetAuraASC())
     {
+        GetAuraASC()->AbilityEquipped.AddUObject(this, &UOverlayWidgetController::OnAbilityEquipped);
+
+        if (GetAuraASC()->bStartupAbilitiesGiven)
+        {
+            BroadcastAbilityInfo();
+        }
+        else 
+        {
+            GetAuraASC()->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
+        }
+
         GetAuraASC()->EffectAssetTags.AddLambda(
             [this](const FGameplayTagContainer& AssetTags)
             {
@@ -41,4 +60,18 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
             }
         );
     }
+}
+
+void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot) const
+{
+    FAuraAbilityInfo LastSlotInfo;
+    LastSlotInfo.StatusTag = FGameplayTag::RequestGameplayTag(FName("Abilities.Status.Unlocked"));
+    LastSlotInfo.InputTag = PreviousSlot;
+    LastSlotInfo.AbilityTag = FGameplayTag::RequestGameplayTag(FName("Abilities.None"));
+    AbilityInfoDelegate.Broadcast(LastSlotInfo);
+
+    FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+    Info.StatusTag = Status;
+    Info.InputTag = Slot;
+    AbilityInfoDelegate.Broadcast(Info);
 }

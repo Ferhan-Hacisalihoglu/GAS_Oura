@@ -2,6 +2,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
@@ -16,6 +17,13 @@ AAuraCharacterBase::AAuraCharacterBase()
 
 	HaloOfProtectionNiagaraComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>(TEXT("HaloOfProtectionNiagaraComponent"));
 	HaloOfProtectionNiagaraComponent->SetupAttachment(EffectAttachComponent);
+}
+
+void AAuraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAuraCharacterBase, bIsBeingShocked);
 }
 
 void AAuraCharacterBase::BeginPlay()
@@ -131,4 +139,14 @@ UNiagaraSystem* AAuraCharacterBase::GetBooldEffect_Implementation() const
 USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
 {
 	return Weapon;
+}
+
+void AAuraCharacterBase::SetIsBeingShocked_Implementation(bool bInShockLoop)
+{
+	bIsBeingShocked = bInShockLoop;
+}
+
+bool AAuraCharacterBase::IsSBeignShocked_Implementation() const
+{
+	return bIsBeingShocked;
 }

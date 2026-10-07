@@ -22,7 +22,7 @@ class QURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInte
 
 public:
 	AAuraCharacterBase();
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual FVector GetCombatSocketLocation_Implementation() override;
 	virtual void Die() override;
@@ -34,6 +34,11 @@ public:
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual UNiagaraSystem* GetBooldEffect_Implementation() const override;
+	virtual void SetIsBeingShocked_Implementation(bool bInShockLoop) override;
+	virtual bool IsSBeignShocked_Implementation() const override;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShocked = false;
 
 protected:
 	virtual void BeginPlay() override;

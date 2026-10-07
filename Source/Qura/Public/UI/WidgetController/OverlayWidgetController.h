@@ -42,12 +42,17 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FOnAttributeChangedSignature OnManaChanged;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
+	FOnAttributeChangedSignature OnHealthChanged;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
+
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot) const;
 
 };
 

@@ -10,6 +10,7 @@ DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
 DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquipped, const FGameplayTag& /*AbilityTag*/, const FGameplayTag& /*Status*/, const FGameplayTag& /*Slot*/, const FGameplayTag& /*PrevSlot*/);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChanged, const FGameplayTag& /*AbilityTag*/, const FGameplayTag& /*StatusTag*/, int32 /*AbilityLevel*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FActivatePassiveEffect, const FGameplayTag& /*AbilityTag*/, bool /*bActivate*/);
+DECLARE_MULTICAST_DELEGATE(FFAbilitiesGiven);
 
 UCLASS()
 class QURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
@@ -18,6 +19,7 @@ class QURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
 
 public:
 	FEffectAssetTags EffectAssetTags;
+	FFAbilitiesGiven AbilitiesGivenDelegate;
 	void AbilityActorInfoSet();
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
@@ -38,6 +40,7 @@ public:
 	static bool AbilityHasAnySlot(const FGameplayAbilitySpec& Spec);
 	bool IsPassiveAbility(const FGameplayAbilitySpec& Spec) const;
 	FActivatePassiveEffect ActivatePassiveEffect;
+	bool bStartupAbilitiesGiven = false;
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastActivatePassiveEffect(const FGameplayTag& AbilityTag, bool bActivate);
@@ -52,6 +55,8 @@ public:
 	void ClientEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot);
 
 protected:
+	virtual void OnRep_ActivateAbilities() override;
+
 	UFUNCTION(Client, Reliable)
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveHandle);
 
