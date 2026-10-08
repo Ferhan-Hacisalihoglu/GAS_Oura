@@ -9,6 +9,7 @@ struct FWidgetControllerParams;
 class UAbilitySystemComponent;
 class ULootTiers;
 class USpellMenuWidgetController;
+class UAttributeMenuWidgetController;
 
 UCLASS()
 class QURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
@@ -52,6 +53,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetControllers", meta = (DefaultToSelf = "WorldContextObject"))
 	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetControllers", meta = (DefaultToSelf = "WorldContextObject"))
+	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);

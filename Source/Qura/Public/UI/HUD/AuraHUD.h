@@ -10,6 +10,7 @@ class UAuraUserWidget;
 class UOverlayWidgetController;
 class USpellMenuWidgetController;
 struct FWidgetControllerParams;
+class UAttributeMenuWidgetController;
 
 UCLASS()
 class QURA_API AAuraHUD : public AHUD
@@ -20,6 +21,7 @@ public:
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 	USpellMenuWidgetController* GetSpellMenuWidgetController(const FWidgetControllerParams& WCParams);
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
 	
 private:
 	UPROPERTY()
@@ -39,5 +41,11 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USpellMenuWidgetController> SpellMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
 
 };
