@@ -4,6 +4,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Interaction/PlayerInterface.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -328,5 +329,30 @@ void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
     {
         bStartupAbilitiesGiven = true;
         AbilitiesGivenDelegate.Broadcast();
+    }
+}
+
+void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+    if (GetAvatarActor()->Implements<UPlayerInterface>())
+    {
+        if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
+        {
+            ServerUpgradeAttribute(AttributeTag);
+        }
+    }
+}
+
+void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+    FGameplayEventData Payload;
+    Payload.EventTag = AttributeTag;
+    Payload.EventMagnitude = 1.0f;
+
+    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
+
+    if (GetAvatarActor()->Implements<UPlayerInterface>())
+    {
+        IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(), -1);
     }
 }
