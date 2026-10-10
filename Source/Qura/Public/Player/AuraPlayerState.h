@@ -9,6 +9,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/)
 
 class UAbilitySystemComponent;
 class UAttributeSet;
+class ULevelUpInfo;
 
 UCLASS()
 class QURA_API AAuraPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -34,6 +35,13 @@ public:
 	void SetAttributePoints(int32 InPoints);
 	FOnPlayerStatChanged OnAttributePointsChangedDelegate;
 
+	FORCEINLINE int32 GetXP() const { return XP; }
+	void AddToXP(int32 InXP);
+	void SetXP(int32 InXP);
+	FOnPlayerStatChanged OnXPChangedDelegate;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULevelUpInfo> LevelUpInfo;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -60,5 +68,11 @@ private:
 
 	UFUNCTION()
 	void OnRep_AttributePoints(int32 OldAttributePoints);
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP)
+	int32 XP = 0;
+
+	UFUNCTION()
+	void OnRep_XP(int32 OldXP);
 
 };
