@@ -16,7 +16,8 @@
 				"GameplayAbilities",
 				"UMG",
 				"CoreUObject",
-				"Niagara"
+				"Niagara",
+				"ModelViewViewModel"
 			]
 		}
 	],

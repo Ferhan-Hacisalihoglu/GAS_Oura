@@ -6,6 +6,7 @@
 #include "AuraPlayerState.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/)
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32 /*StatValue*/, bool /*bLevelUp*/)
 
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -24,6 +25,8 @@ public:
 
 	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
 	void AddToLevel(int32 InLevel);
+	void SetLevel(int32 InLevel);
+	FOnLevelChanged OnLevelChangedDelegate;
 
 	FORCEINLINE int32 GetSpellPoints() const { return SpellPoints; }
 	void AddToSpellPoints(int32 InPoints);
