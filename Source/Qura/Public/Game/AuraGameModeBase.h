@@ -7,6 +7,9 @@
 class UCharacterClassInfo;
 class ULootTiers;
 class UAbilityInfo;
+class UMVVM_LoadSlot;
+class USaveGame;
+class ULoadScreenSaveGame;
 
 UCLASS()
 class QURA_API AAuraGameModeBase : public AGameModeBase
@@ -22,5 +25,27 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
+
+	UPROPERTY(EditDefaultsOnly)
+	FString DefaultMapName;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> DefaultMap;
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
+
+	void TravelToMap(UMVVM_LoadSlot* Slot);
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
+
+	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
+	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
+
+	static void DeleteSlot(const FString& LoadSlot, int32 SlotIndex);
+
+protected:
+	virtual void BeginPlay() override;
 
 };
