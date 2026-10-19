@@ -2,6 +2,7 @@
 #include "UI/ViewModel/MVVM_LoadSlot.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Game/AuraGameInstance.h"
 
 void UMVVM_LoadScreen::InitializeLoadSlots()
 {
@@ -62,6 +63,7 @@ void UMVVM_LoadScreen::LoadData()
         LoadSlot.Value->InitializeSlot();
 
         LoadSlot.Value->SetMapName(SaveObject->MapName);
+        LoadSlot.Value->PlayerStartTag = SaveObject->PlayerStartTag; 
         LoadSlot.Value->SetPlayerLevel(SaveObject->PlayerLevel);
     }
 }
@@ -84,6 +86,8 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredNa
     LoadSlots[Slot]->SetPlayerName(EnteredName);
     LoadSlots[Slot]->SetPlayerLevel(1);
     LoadSlots[Slot]->SlotStatus = Taken;
+    LoadSlots[Slot]->PlayerStartTag = AuraGameMode->DefaultPlayerStartTag;
+    LoadSlots[Slot]->MapAssetName = AuraGameMode->DefaultMap.ToSoftObjectPath().GetAssetName();
 
     AuraGameMode->SaveSlotData(LoadSlots[Slot], Slot);
     LoadSlots[Slot]->InitializeSlot();
@@ -109,6 +113,11 @@ void UMVVM_LoadScreen::SelectSlotButtonPressed(int32 Slot)
 void UMVVM_LoadScreen::PlayButtonPressed()
 {
     AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+    UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(AuraGameMode->GetGameInstance());
+    UE_LOG(LogTemp, Error, TEXT("%s"), *SelectedSlot->GetLoadSlotName());
+    AuraGameInstance->PlayerStartTag = SelectedSlot->PlayerStartTag;
+    AuraGameInstance->LoadSlotName = SelectedSlot->GetLoadSlotName();
+    AuraGameInstance->LoadSlotIndex = SelectedSlot->SlotIndex;
 
     if (IsValid(AuraGameMode))
     {
