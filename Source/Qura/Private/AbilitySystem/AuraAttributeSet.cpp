@@ -146,6 +146,7 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
             IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, 1);
             IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, 1);
         }
+        IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
     }
 }
 

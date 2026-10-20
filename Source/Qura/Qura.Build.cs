@@ -12,6 +12,7 @@ public class Qura : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "NavigationSystem", "GameplayTasks", "GameplayTags", "Niagara"});
 
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		

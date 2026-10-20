@@ -26,7 +26,7 @@ class QURA_API ULevelUpInfo : public UDataAsset
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FAuraLevelUpInfo> LevelUpInfoArray;
+	TArray<FAuraLevelUpInfo> LevelUpInformation;
 
 	int32 FindLevelForXP(int32 InXP) const;
 	

@@ -3,6 +3,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Player/AuraPlayerState.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -12,6 +13,8 @@ void UOverlayWidgetController::BroadcastInitialValues()
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
+    GetAuraPS()->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+
     GetAuraPS()->OnLevelChangedDelegate.AddLambda(
         [this](int32 NewLevel, bool bLevelUp)
         {
@@ -81,4 +84,25 @@ void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag,
     Info.StatusTag = Status;
     Info.InputTag = Slot;
     AbilityInfoDelegate.Broadcast(Info);
+}
+
+void UOverlayWidgetController::OnXPChanged(int32 NewXP)
+{
+	const ULevelUpInfo* LevelUpInfo = GetAuraPS()->LevelUpInfo;
+
+	const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
+	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
+
+	if (Level <= MaxLevel && Level > 0)
+	{
+		const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
+		const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level - 1].LevelUpRequirement;
+
+		const int32 DeltaLevelRequirement = LevelUpRequirement - PreviousLevelUpRequirement;
+		const int32 XPForThisLevel = NewXP - PreviousLevelUpRequirement;
+
+		const float XPBarPercent = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelRequirement);
+
+		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
+	}
 }

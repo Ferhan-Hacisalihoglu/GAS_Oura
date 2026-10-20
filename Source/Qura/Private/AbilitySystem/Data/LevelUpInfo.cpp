@@ -6,7 +6,7 @@ int32 ULevelUpInfo::FindLevelForXP(int32 InXP) const
     bool bSearching = true;
     while (bSearching)
     {
-        if (InXP >= LevelUpInfoArray[Level].LevelUpRequirement)
+        if (InXP >= LevelUpInformation[Level].LevelUpRequirement)
         {
             ++Level;
         }
