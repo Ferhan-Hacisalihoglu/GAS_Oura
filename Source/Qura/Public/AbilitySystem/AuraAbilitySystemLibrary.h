@@ -10,6 +10,7 @@ class UAbilitySystemComponent;
 class ULootTiers;
 class USpellMenuWidgetController;
 class UAttributeMenuWidgetController;
+class ULoadScreenSaveGame;
 
 UCLASS()
 class QURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
@@ -62,5 +63,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetClosestTargets(int32 MaxTargets, const TArray<AActor*>& Actors, TArray<AActor*>& OutClosestTargets, const FVector& Origin);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static void InitializeDefaultAttributesFromSaveData(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, const ULoadScreenSaveGame* SaveData);
 
 };
