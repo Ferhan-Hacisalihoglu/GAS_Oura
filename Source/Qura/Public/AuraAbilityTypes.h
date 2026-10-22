@@ -46,12 +46,16 @@ struct FAuraGameplayEffectContext : public FGameplayEffectContext
 
 public:
 
+	bool IsBlockedHit() const { return bIsBlockedHit; }
+	bool IsCriticalHit() const { return bIsCriticalHit; }
 	FVector GetKnockbackForce() const { return KnockbackForce; }
 	bool IsSuccessfulDebuff() const { return bIsSuccessfulDebuff; }
 	float GetDebuffDamage() const { return DebuffDamage; }
 	float GetDebuffDuration() const { return DebuffDuration; }
 	float GetDebuffFrequency() const { return DebuffFrequency; }
 
+	void SetBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
+	void SetCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
 	void SetKnockbackForce(const FVector& InForce) { KnockbackForce = InForce; }
 	void SetSuccessfulDebuff(bool bInIsDebuff ) { bIsSuccessfulDebuff = bInIsDebuff; }
 	void SetDebuffDamage(float InDebuffDamage) { DebuffDamage = InDebuffDamage; }
@@ -77,6 +81,12 @@ public:
 	virtual bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess) override;
 	
 protected:
+
+	UPROPERTY()
+	bool bIsBlockedHit = false;
+
+	UPROPERTY()
+	bool bIsCriticalHit = false;
 
 	UPROPERTY()
 	FVector KnockbackForce = FVector::ZeroVector;

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -13,6 +10,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -202,4 +200,16 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
     }
 
     return AuraAbilitySystemComponent;
+}
+
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
+{
+    if (IsValid(TargetCharacter) && IsValid(DamageTextComponentClass))
+    {
+        UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+        DamageText->RegisterComponent();
+        DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+        DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+        DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
+    }
 }

@@ -14,6 +14,7 @@ class USplineComponent;
 class UAuraInputConfig;
 class USplineComponent;
 class UAuraAbilitySystemComponent;
+class UDamageTextComponent;
 
 enum class ETargetingStatus : uint8
 {
@@ -30,6 +31,9 @@ class QURA_API AAuraPlayerController : public APlayerController
 public:
 	AAuraPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit);
 
 protected:
 	virtual void BeginPlay() override;
@@ -77,5 +81,8 @@ private:
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 
 	UAuraAbilitySystemComponent* GetASC();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 
 };
