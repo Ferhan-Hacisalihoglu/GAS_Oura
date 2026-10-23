@@ -23,6 +23,9 @@ protected:
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DebuffChance = 35.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DebuffDamage = 11.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
