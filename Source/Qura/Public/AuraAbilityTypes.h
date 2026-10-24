@@ -23,6 +23,15 @@ struct FDamageEffectParams
 	TObjectPtr<UAbilitySystemComponent> TargetAbilitySystemComponent;
 
 	UPROPERTY(BlueprintReadWrite)
+	float BaseDamage = 0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag DamageResistanceType = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag DamageDebuffType = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite)
 	float DebuffChance = 0.f;
 
 	UPROPERTY(BlueprintReadWrite)
@@ -56,6 +65,9 @@ public:
 	float GetDebuffDamage() const { return DebuffDamage; }
 	float GetDebuffDuration() const { return DebuffDuration; }
 	float GetDebuffFrequency() const { return DebuffFrequency; }
+	TSharedPtr<FGameplayTag> GetDebuffType() const { return DebuffType; }
+	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
+	TSharedPtr<FGameplayTag> GetDamageResistanceType() const { return DamageType; }
 
 	void SetBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
 	void SetCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
@@ -64,6 +76,9 @@ public:
 	void SetDebuffDamage(float InDebuffDamage) { DebuffDamage = InDebuffDamage; }
 	void SetDebuffDuration(float InDebuffDuration) { DebuffDuration = InDebuffDuration; }
 	void SetDebuffFrequency(float InDebuffFrequency) { DebuffFrequency = InDebuffFrequency; }
+	void SetDebuffType(TSharedPtr<FGameplayTag> InDebuffType) { DebuffType = InDebuffType; }
+	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
+	void SetDamageResistanceType(TSharedPtr<FGameplayTag> InDamageResistanceType) { DamageType = InDamageResistanceType; }
 
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
@@ -105,6 +120,10 @@ protected:
 
 	UPROPERTY()
 	float DebuffFrequency = 0.f;
+
+	TSharedPtr<FGameplayTag> DebuffType;
+
+	TSharedPtr<FGameplayTag> DamageType;
 };
 
 template<>

@@ -14,6 +14,7 @@ class UMaterialInstanceDynamic;
 class UMaterialInstance;
 class UNiagaraSystem;
 class UPassiveNiagaraComponent;
+class UDebuffNiagaraComponent;
 
 UCLASS()
 class QURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -40,6 +41,9 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bIsBeingShocked = false;
+
+	FOnASCRegistered OnAscRegistered;
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -92,6 +96,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	UNiagaraSystem* BloodEffect;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")

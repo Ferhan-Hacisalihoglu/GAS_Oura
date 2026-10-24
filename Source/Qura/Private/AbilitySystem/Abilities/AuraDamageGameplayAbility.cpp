@@ -7,7 +7,9 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassD
 	Params.DamageGameplayEffectClass = DamageEffectClass;
 	Params.SourceAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
 	Params.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
-
+	Params.DamageResistanceType = DamageResistanceType;
+	Params.DamageDebuffType = DamageDebuffType;
+	Params.BaseDamage = Damage.GetValueAtLevel(GetAbilityLevel());
 	Params.DebuffChance = DebuffChance;
 	Params.DebuffDamage = DebuffDamage;
 	Params.DebuffDuration = DebuffDuration;

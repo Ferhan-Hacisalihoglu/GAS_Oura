@@ -19,8 +19,11 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
     FGameplayEffectContextHandle EffectContexthandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
     EffectContexthandle.AddSourceObject(SourceAvatarActor);
 	SetKnockbackForce(EffectContexthandle, DamageEffectParams.KnockbackForce);
+	SetDamageResistanceType(EffectContexthandle, DamageEffectParams.DamageResistanceType);
+	SetDebuffType(EffectContexthandle, DamageEffectParams.DamageDebuffType);
     const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParams.DamageGameplayEffectClass, 1.f, EffectContexthandle);
 
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageResistanceType, DamageEffectParams.BaseDamage);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, FGameplayTag::RequestGameplayTag(FName("Debuff.Change")), DamageEffectParams.DebuffChance);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, FGameplayTag::RequestGameplayTag(FName("Debuff.Damage")), DamageEffectParams.DebuffDamage);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, FGameplayTag::RequestGameplayTag(FName("Debuff.Frequency")), DamageEffectParams.DebuffFrequency);
@@ -362,4 +365,54 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 	{
 		AuraEffectContext->SetCriticalHit(bInIsCriticalHit);
 	}
+}
+
+FGameplayTag UAuraAbilitySystemLibrary::GetDebuffType(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAuraGameplayEffectContext* AuraEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		if (AuraEffectContext->GetDebuffType().IsValid())
+		{
+			return *AuraEffectContext->GetDebuffType();
+		}
+	}
+	return FGameplayTag();
+}
+
+void UAuraAbilitySystemLibrary::SetDebuffType(FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InDebuffType)
+{
+	if (FAuraGameplayEffectContext* AuraEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		AuraEffectContext->SetDebuffType(MakeShared<FGameplayTag>(InDebuffType));
+	}
+}
+
+FGameplayTag UAuraAbilitySystemLibrary::GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAuraGameplayEffectContext* AuraEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		if (AuraEffectContext->GetDamageType().IsValid())
+		{
+			return *AuraEffectContext->GetDamageType();
+		}
+	}
+	return FGameplayTag();
+}
+
+void UAuraAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InDamageType)
+{
+	if (FAuraGameplayEffectContext* AuraEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		AuraEffectContext->SetDamageType(MakeShared<FGameplayTag>(InDamageType));
+	}
+}
+
+FGameplayTag UAuraAbilitySystemLibrary::GetDamageResistanceType(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	return GetDamageType(EffectContextHandle);
+}
+
+void UAuraAbilitySystemLibrary::SetDamageResistanceType(FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InDamageResistanceType)
+{
+	SetDamageType(EffectContextHandle, InDamageResistanceType);
 }

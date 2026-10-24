@@ -23,6 +23,15 @@ protected:
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag DamageResistanceType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag DamageDebuffType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FScalableFloat Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DebuffChance = 35.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
@@ -32,7 +41,7 @@ protected:
 	float DebuffFrequency = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	float DebuffDuration = 3.f;
+	float DebuffDuration = 2.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float KnockbackForceMagnitude = 500.f;

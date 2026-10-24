@@ -9,6 +9,7 @@
 #include "AuraAbilityTypes.h"
 #include "Interaction/PlayerInterface.h"
 #include "Player/AuraPlayerController.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -158,11 +159,12 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	FGameplayEffectContextHandle EffectContext = Props.SourceASC->MakeEffectContext();
 	EffectContext.AddSourceObject(Props.SourceAvatarActor);
 
+    const FGameplayTag DebuffTag = UAuraAbilitySystemLibrary::GetDebuffType(Props.EffectContextHandle);
 	const float DebuffDamage = UAuraAbilitySystemLibrary::GetDebuffDamage(Props.EffectContextHandle);
 	const float DebuffDuration = UAuraAbilitySystemLibrary::GetDebuffDuration(Props.EffectContextHandle);
 	const float DebuffFrequency = UAuraAbilitySystemLibrary::GetDebuffFrequency(Props.EffectContextHandle);
 
-	FString DebuffName = FString::Printf(TEXT("DynamicDebuff_test"));
+	FString DebuffName = DebuffTag.ToString();
 	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
 
     //Effect->bExecutePeriodicEffectOnApplication = false;
@@ -170,7 +172,14 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	Effect->Period = DebuffFrequency;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
 
+	FInheritedTagContainer TagContainer;
+	TagContainer.AddTag(DebuffTag);
+	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
+	Component.SetAndApplyTargetTagChanges(TagContainer);
+
+	PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
+	PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	Effect->StackLimitCount = 1;
 
 	const int32 Index = Effect->Modifiers.Num();
@@ -180,6 +189,8 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
 	ModifierInfo.Attribute = UAuraAttributeSet::GetIncomingDamageAttribute();
+
+	UAuraAbilitySystemLibrary::SetDamageType(EffectContext, DebuffTag);
 	
 	if (TSharedPtr<FGameplayEffectSpec> MutableSpec = MakeShared<FGameplayEffectSpec>(Effect, EffectContext, 1.f))
 	{

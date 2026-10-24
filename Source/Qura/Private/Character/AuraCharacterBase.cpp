@@ -3,10 +3,19 @@
 #include "Components/CapsuleComponent.h"
 #include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>(TEXT("BurnDebuffComponent"));
+	BurnDebuffComponent->SetupAttachment(GetRootComponent());
+	BurnDebuffComponent->DebuffTag = FGameplayTag::RequestGameplayTag(TEXT("Debuff.Burn"));
+
+	StunDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>(TEXT("StunDebuffComponent"));
+	StunDebuffComponent->SetupAttachment(GetRootComponent());
+	StunDebuffComponent->DebuffTag = FGameplayTag::RequestGameplayTag(TEXT("Debuff.Stun"));
 	
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
@@ -151,4 +160,9 @@ void AAuraCharacterBase::SetIsBeingShocked_Implementation(bool bInShockLoop)
 bool AAuraCharacterBase::IsSBeignShocked_Implementation() const
 {
 	return bIsBeingShocked;
+}
+
+FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
+{
+	return OnAscRegistered;
 }

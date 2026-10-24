@@ -5,6 +5,9 @@
 #include "CombatInterface.generated.h"
 
 class UNiagaraSystem;
+class UAbilitySystemComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*);
 
 UINTERFACE(MinimalAPI)
 class UCombatInterface : public UInterface
@@ -48,5 +51,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	int32 GetPlayerLevel();
+
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
 
 };

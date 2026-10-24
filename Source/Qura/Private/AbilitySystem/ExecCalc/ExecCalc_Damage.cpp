@@ -59,12 +59,30 @@ UExecCalc_Damage::UExecCalc_Damage()
 void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& Spec, FAggregatorEvaluateParameters EvaluationParameters, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> InTagsToDefs) const
 {
     const float SourceDebuffChange = Spec.GetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag("Debuff.Chance"), false, -1.0f);
-    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%f"), SourceDebuffChange));
+    //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%f"), SourceDebuffChange));
 
-    float TargetDebuffResistance  = 0.0f;
-    const FGameplayTag& ResistanceTag = FGameplayTag::RequestGameplayTag("Attributes.Resistance.Fire");
-    ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(InTagsToDefs[ResistanceTag], EvaluationParameters, TargetDebuffResistance);
-    TargetDebuffResistance  = FMath::Max<float>(TargetDebuffResistance, 0.0f);
+    FGameplayTag ResistanceTag = UAuraAbilitySystemLibrary::GetDamageResistanceType(Spec.GetContext());
+    if (!ResistanceTag.IsValid())
+    {
+        for (const auto& Pair : InTagsToDefs)
+        {
+            if (Spec.SetByCallerTagMagnitudes.Contains(Pair.Key))
+            {
+                ResistanceTag = Pair.Key;
+                break;
+            }
+        }
+    }
+
+    const FGameplayTag DebuffType = UAuraAbilitySystemLibrary::GetDebuffType(Spec.GetContext());
+
+    float TargetDebuffResistance = 0.0f;
+    if (const FGameplayEffectAttributeCaptureDefinition* CaptureDef = InTagsToDefs.Find(ResistanceTag))
+    {
+        ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(*CaptureDef, EvaluationParameters, TargetDebuffResistance);
+        TargetDebuffResistance = FMath::Max<float>(TargetDebuffResistance, 0.0f);
+    }
+
     const float EffectiveDebuffChange = SourceDebuffChange * ( 100 - TargetDebuffResistance) / 100.0f;
     const bool bDebuff = FMath::RandRange(1,100) < EffectiveDebuffChange;
 
@@ -73,6 +91,7 @@ void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParam
         FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
 
         UAuraAbilitySystemLibrary::SetIsSuccessfulDebuff(ContextHandle, true);
+        UAuraAbilitySystemLibrary::SetDebuffType(ContextHandle, DebuffType);
 
         const float DebuffDamage = Spec.GetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag("Debuff.Damage"), false, -1.0f);
         const float DebuffDuration = Spec.GetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag("Debuff.Duration"), false, -1.0f);
