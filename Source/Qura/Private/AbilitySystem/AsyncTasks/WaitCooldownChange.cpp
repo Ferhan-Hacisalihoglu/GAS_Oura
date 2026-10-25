@@ -45,11 +45,23 @@ void UWaitCooldownChange::OnActiveEffectAdded(UAbilitySystemComponent* TargetASC
     FGameplayTagContainer GrantedTags;
     SpecApplied.GetAllGrantedTags(GrantedTags);
 
-
     if (AssetTags.HasTagExact(CooldownTag) || GrantedTags.HasTagExact(CooldownTag))
     {
-        CooldownStart.Broadcast(SpecApplied.GetDuration());
+        FGameplayEffectQuery GameplayEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(CooldownTag.GetSingleTagContainer());
+        TArray<float> TimesRemaining = ASC->GetActiveEffectsTimeRemaining(GameplayEffectQuery);
+        if (TimesRemaining.Num() > 0)
+        {
+            float TimeRemaining = TimesRemaining[0];
+            for (int32 i = 0; i < TimesRemaining.Num(); i++)
+            {
+                if (TimesRemaining[i] > TimeRemaining)
+                {
+                    TimeRemaining = TimesRemaining[i];
+                }
+            }   
+            
+            CooldownStart.Broadcast(TimeRemaining);
+        }
     }
-
 
 }

@@ -190,7 +190,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
 	ModifierInfo.Attribute = UAuraAttributeSet::GetIncomingDamageAttribute();
 
-	UAuraAbilitySystemLibrary::SetDamageType(EffectContext, DebuffTag);
+	UAuraAbilitySystemLibrary::SetDamageResistanceType(EffectContext, DebuffTag);
 	
 	if (TSharedPtr<FGameplayEffectSpec> MutableSpec = MakeShared<FGameplayEffectSpec>(Effect, EffectContext, 1.f))
 	{
