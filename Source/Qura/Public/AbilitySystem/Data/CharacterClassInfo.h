@@ -15,6 +15,18 @@ enum class ECharacterClass : uint8
 	Ranger
 };
 
+USTRUCT(BlueprintType)
+struct FCharacterClassDefaultsInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
+	TSubclassOf<UGameplayEffect> PrimaryAttributes;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+};
+
 UCLASS()
 class QURA_API UCharacterClassInfo : public UDataAsset
 {
@@ -22,13 +34,13 @@ class QURA_API UCharacterClassInfo : public UDataAsset
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	TMap<ECharacterClass, FCharacterClassDefaultsInfo> CharacterClassInformation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
-	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TSubclassOf<UGameplayEffect> PrimaryAttributes_SetByCaller;
@@ -41,5 +53,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults|Damage")
 	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
+
+	FCharacterClassDefaultsInfo GetClassDefaultsInfo(ECharacterClass CharacterClass);
 	
 };
