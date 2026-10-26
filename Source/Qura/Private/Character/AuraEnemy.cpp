@@ -69,6 +69,7 @@ void AAuraEnemy::PossessedBy(AController* NewController)
     AuraAIController = Cast<AAuraAIController>(NewController);
     AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
     AuraAIController->RunBehaviorTree(BehaviorTree);
+    AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
 void AAuraEnemy::InitAbilityActorInfo()
