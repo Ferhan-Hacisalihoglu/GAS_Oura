@@ -66,9 +66,30 @@ void AAuraCharacterBase::AddCharacterAbilities()
 	AuraASC->AddCharacterPassiveAbilities(StartupPassiveAbilities);
 }
 
-FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation()
+FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	if (MontageTag.MatchesTagExact(FGameplayTag::RequestGameplayTag(TEXT("CombatSocket.Weapon"))) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
+	}
+
+	if (MontageTag.MatchesTagExact(FGameplayTag::RequestGameplayTag(TEXT("CombatSocket.LeftHand"))))
+	{
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+
+	if (MontageTag.MatchesTagExact(FGameplayTag::RequestGameplayTag(TEXT("CombatSocket.RightHand"))))
+	{
+		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+
+	if (MontageTag.MatchesTagExact(FGameplayTag::RequestGameplayTag(TEXT("CombatSocket.Tail"))))
+	{
+		return GetMesh()->GetSocketLocation(TailSocketName);
+	}
+
+	return FVector();
+
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()
@@ -175,4 +196,15 @@ int32 AAuraCharacterBase::GetMinionCount_Implementation()
 void AAuraCharacterBase::IncrementMinionCount_Implementation(int32 Amount)
 {
 	MinionCount += Amount;
+}
+
+
+TArray<FTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
+UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
 }
