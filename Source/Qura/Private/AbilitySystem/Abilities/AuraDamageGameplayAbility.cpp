@@ -24,3 +24,14 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassD
 	
 	return Params;
 }
+
+FTaggedMontage UAuraDamageGameplayAbility::GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& MontageArray) const
+{
+	if (MontageArray.Num() > 0)
+	{
+		const int32 RandomIndex = FMath::RandRange(0, MontageArray.Num() - 1);
+		return MontageArray[RandomIndex];
+	}
+
+	return FTaggedMontage();
+}
