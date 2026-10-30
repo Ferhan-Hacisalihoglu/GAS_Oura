@@ -11,6 +11,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Interaction/EnemyInterface.h"
 #include "UI/Widget/DamageTextComponent.h"
+#include "Character/AuraCharacter.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -47,6 +48,19 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 
 void AAuraPlayerController::CursorTrace()
 {
+    if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.CursorTrace"))))
+    {
+        UnHighlightActor(LastActor);
+        UnHighlightActor(ThisActor);
+
+        if (IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>()) 
+        {
+            LastActor = nullptr;
+            ThisActor = nullptr;
+            return;
+        }
+    }
+
     const ECollisionChannel TraceChannel = ECC_Visibility;
     GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 
@@ -112,11 +126,17 @@ void AAuraPlayerController::SetupInputComponent()
     AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
     AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::ShiftPressed);
     AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::ShiftReleased); 
+    AuraInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Zoom);
     AuraInputComponent->BindAbilityActions(InputConfig, this, &AAuraPlayerController::AbilityInputTagPressed, &AAuraPlayerController::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+    if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputPressed"))))
+    {
+        return;
+    }
+
     const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
     const FRotator Rotation = GetControlRotation();
     const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -133,8 +153,21 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
     }
 }
 
+void AAuraPlayerController::Zoom(const FInputActionValue& InputActionValue)
+{
+    if (AAuraCharacter* AuraCharacter = Cast<AAuraCharacter>(GetPawn()))
+    {
+        AuraCharacter->ZoomCamera(InputActionValue.Get<float>() * 50.0f);
+    }
+}
+
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+    if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputPressed"))))
+    {
+        return;
+    }
+
     if (IsValid(ThisActor))
     {
         TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
@@ -151,6 +184,11 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+    if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputReleased"))))
+    {
+        return;
+    }
+
     if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 
     if (TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyDown)
@@ -176,10 +214,16 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
  
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
+    if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputHeld"))))
+    {
+        return;
+    }
+
     if (TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyDown)
     {
         if (GetASC()) GetASC()-> AbilityInputTagHeld(InputTag);
     }
+
     else
     {
         if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;

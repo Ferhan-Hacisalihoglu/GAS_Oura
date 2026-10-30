@@ -15,6 +15,7 @@ class QURA_API AAuraCharacter : public AAuraCharacterBase, public IPlayerInterfa
 
 public:
 	AAuraCharacter();
+	void ZoomCamera(float ZoomAmount);
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
@@ -30,6 +31,11 @@ public:
 	void LoadProgress();
 
 private:
+	static constexpr float MinCameraArmLength = 500.0f;
+	static constexpr float MaxCameraArmLength = 1000.0f;
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UCameraComponent> CameraComponent;
 

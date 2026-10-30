@@ -155,7 +155,6 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 
 void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 {
-	//const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	FGameplayEffectContextHandle EffectContext = Props.SourceASC->MakeEffectContext();
 	EffectContext.AddSourceObject(Props.SourceAvatarActor);
 
@@ -167,7 +166,6 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	FString DebuffName = DebuffTag.ToString();
 	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
 
-    //Effect->bExecutePeriodicEffectOnApplication = false;
 	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
 	Effect->Period = DebuffFrequency;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
@@ -176,6 +174,19 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	TagContainer.AddTag(DebuffTag);
 	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
 	Component.SetAndApplyTargetTagChanges(TagContainer);
+
+    if (DebuffTag.MatchesTag(FGameplayTag::RequestGameplayTag(TEXT("Debuff.Stun"))))
+    {
+        TagContainer.Added.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.CursorTrace")));
+        TagContainer.Added.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputHeld")));
+        TagContainer.Added.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputPressed")));
+        TagContainer.Added.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputReleased")));
+
+        TagContainer.CombinedTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.CursorTrace")));
+        TagContainer.CombinedTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputHeld")));
+        TagContainer.CombinedTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputPressed")));
+        TagContainer.CombinedTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Player.Block.InputReleased")));
+    }
 
 	PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
@@ -186,12 +197,23 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	Effect->Modifiers.Add(FGameplayModifierInfo());
 	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers[Index];
 
+    Effect->bExecutePeriodicEffectOnApplication = false;
+
 	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
 	ModifierInfo.Attribute = UAuraAttributeSet::GetIncomingDamageAttribute();
 
 	UAuraAbilitySystemLibrary::SetDamageResistanceType(EffectContext, DebuffTag);
-	
+
+	if (TSharedPtr<FGameplayEffectSpec> MutableSpec = MakeShared<FGameplayEffectSpec>(Effect, EffectContext, 1.f))
+	{
+		if (Props.TargetASC)
+		{
+			Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec.Get());
+		}
+	}
+
+    /*
 	if (TSharedPtr<FGameplayEffectSpec> MutableSpec = MakeShared<FGameplayEffectSpec>(Effect, EffectContext, 1.f))
 	{
 		if (UWorld* World = GetWorld())
@@ -207,7 +229,8 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 												  }
 											  }, 1.0f, false);
 		}
-	}   
+	}
+    */ 
 }
 
 void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)

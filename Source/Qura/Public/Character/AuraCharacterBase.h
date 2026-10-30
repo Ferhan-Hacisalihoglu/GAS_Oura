@@ -54,6 +54,9 @@ public:
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsStunned = false;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -125,6 +128,11 @@ protected:
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
 	int32 MinionCount = 0;
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	UPROPERTY(EditDefaultsOnly)
+	float BaseWalkSpeed = 450.f;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")

@@ -147,7 +147,14 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
     DetermineDebuff(ExecutionParams, Spec, EvaluationParameters, TagsToCaptureDefs);
 
-    float Damage = 41.0f;
+    float Damage = 0.f;
+
+    const FGameplayTag DamageTypeTag = UAuraAbilitySystemLibrary::GetDamageResistanceType(EffectContextHandle);
+    
+    if (DamageTypeTag.IsValid())
+    {
+        Damage = Spec.GetSetByCallerMagnitude(DamageTypeTag, false);
+    }
 
     float TargetBlockChance = 0.0f;
     ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvaluationParameters, TargetBlockChance);

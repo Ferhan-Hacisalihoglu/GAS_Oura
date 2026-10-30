@@ -24,6 +24,7 @@ AAuraCharacter::AAuraCharacter()
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->bInheritYaw = false;
 	CameraBoom->bDoCollisionTest = false;
+	CameraBoom->TargetArmLength = 750.0f;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -32,6 +33,14 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+}
+
+void AAuraCharacter::ZoomCamera(float ZoomAmount)
+{
+	CameraBoom->TargetArmLength = FMath::Clamp(
+		CameraBoom->TargetArmLength - ZoomAmount,
+		MinCameraArmLength,
+		MaxCameraArmLength);
 }
 
 void AAuraCharacter::PossessedBy(AController* NewController)
@@ -118,6 +127,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 	OnAscRegistered.Broadcast(AbilitySystemComponent);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(TEXT("Debuff.Stun")),EGameplayTagEventType::NewOrRemoved	).AddUObject(this, &AAuraCharacter::StunTagChanged);
 
 	if(AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
@@ -126,6 +136,11 @@ void AAuraCharacter::InitAbilityActorInfo()
 			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
+}
+
+void AAuraCharacter::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	Super::StunTagChanged(CallbackTag, NewCount);
 }
 
 void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
