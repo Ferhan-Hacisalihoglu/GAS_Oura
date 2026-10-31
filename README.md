@@ -8,7 +8,6 @@
 ![Niagara](https://img.shields.io/badge/Niagara-VFX-FF6B35)
 ![CommonUI](https://img.shields.io/badge/CommonUI-UMG%20%2F%20MVVM-4B8BBE)
 ![AI](https://img.shields.io/badge/AI-Behavior%20Tree%20%2F%20EQS-2E8B57)
-![DirectX 12](https://img.shields.io/badge/Windows-DirectX%2012-0078D4?logo=windows&logoColor=white)
 
 Qura is an action-RPG gameplay prototype built with Unreal Engine 5.8. The
 project combines C++ gameplay systems with Blueprint-authored characters,
