@@ -264,7 +264,7 @@ void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
     {
        FGameplayEventData Payload;
        Payload.EventTag = FGameplayTag::RequestGameplayTag(TEXT("Attributes.Meta.IncomingXP"));
-       Payload.EventMagnitude = 33;
+       Payload.EventMagnitude = 55;
        UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, FGameplayTag::RequestGameplayTag(TEXT("Attributes.Meta.IncomingXP")), Payload);
     }
 }
